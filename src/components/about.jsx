@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { values, team, projects, principles } from './constants';
 import { ArrowRight } from 'lucide-react';
+import Image from 'next/image'
 
 const fadeIn = {
   initial: { opacity: 0, y: 20 },
@@ -204,7 +205,7 @@ const ConstructionAboutPage = () => {
                     transition={{ delay: index * 0.1 }}
                   >
                     <Card className='bg-white/80 backdrop-blur-sm overflow-hidden dark:bg-gray-800/80 hover:shadow-xl transition-shadow duration-300'>
-                      <img src={project.image} alt={project.name} className="w-full h-64 object-cover" />
+                      <Image src={project.image} alt={project.name} className="w-full h-64 object-cover" />
                       <CardContent className="p-6">
                         <h3 className='text-2xl font-semibold mb-3 text-blue-700 dark:text-blue-300'>{project.name}</h3>
                         <p className='text-lg mb-4'>{project.description}</p>
@@ -229,7 +230,7 @@ const ConstructionAboutPage = () => {
                   >
                     <Card className='bg-white/80 backdrop-blur-sm overflow-hidden dark:bg-gray-800/80 hover:shadow-xl transition-all duration-300 group'>
                       <div className="relative overflow-hidden">
-                        <img src={member.image} alt={member.name} className="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-110" />
+                        <Image src={member.image} alt={member.name} className="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-110" />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
                           <p className='text-white text-sm'>{member.bio}</p>
                         </div>

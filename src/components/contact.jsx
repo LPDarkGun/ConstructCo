@@ -1,11 +1,12 @@
 'use client'
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Phone, Mail, MapPin, Loader2 } from 'lucide-react';
 import { FaFacebook, FaInstagram, FaLinkedin, FaXTwitter } from "react-icons/fa6";
+import emailjs from '@emailjs/browser';
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -18,15 +19,46 @@ const staggerChildren = {
 };
 
 const Contact = () => {
+  const formRef = useRef();
+  const [formData, setFormData] = useState({
+    to_name: '',
+    from_name: '',
+    subject: '',
+    message: ''
+  });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState(null);
 
-  const handleSubmit = (e) => {
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prevState => ({
+      ...prevState,
+      [name]: value
+    }));
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-    setTimeout(() => {
+    setSubmitStatus(null);
+
+    try {
+      const result = await emailjs.sendForm(
+        'service_oorpewg', // Your service ID
+        'template_b4si6mh', // Your template ID
+        formRef.current,
+        'xnVWruMrJZ8sURogJ' // Your public key
+      );
+
+      console.log(result.text);
+      setSubmitStatus('success');
+      setFormData({ to_name: '', from_name: '', subject: '', message: '' });
+    } catch (error) {
+      console.error('EmailJS error:', error);
+      setSubmitStatus('error');
+    } finally {
       setIsSubmitting(false);
-      // Handle form submission here
-    }, 2000);
+    }
   };
 
   return (
@@ -49,22 +81,34 @@ const Contact = () => {
             animate="animate"
           >
             <h3 className='text-2xl font-semibold text-blue-700 dark:text-blue-300 mb-6'>Contact Form</h3>
-            <form className="space-y-4" onSubmit={handleSubmit}>
+            <form className="space-y-4" ref={formRef} onSubmit={handleSubmit}>
               <motion.div variants={staggerChildren} initial="initial" animate="animate" className='space-y-4'>
-                {['Your Name', 'Your Email', 'Subject'].map((placeholder, index) => (
+                {[
+                  { name: 'to_name', placeholder: 'Your Name', type: 'text' },
+                  { name: 'from_name', placeholder: 'Your Email', type: 'email' },
+                  { name: 'subject', placeholder: 'Subject', type: 'text' }
+                ].map((field, index) => (
                   <motion.div key={index} variants={fadeInUp}>
                     <Input 
-                      placeholder={placeholder} 
-                      type={placeholder === 'Your Email' ? 'email' : 'text'}
+                      name={field.name}
+                      placeholder={field.placeholder} 
+                      type={field.type}
+                      value={formData[field.name]}
+                      onChange={handleChange}
                       className="w-full bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 transition-all duration-300"
+                      required
                     />
                   </motion.div>
                 ))}
                 <motion.div variants={fadeInUp}>
                   <Textarea 
+                    name="message"
                     placeholder="Your Message" 
                     rows={4} 
+                    value={formData.message}
+                    onChange={handleChange}
                     className="w-full bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 transition-all duration-300"
+                    required
                   />
                 </motion.div>
               </motion.div>
@@ -92,6 +136,20 @@ const Contact = () => {
                 </Button>
               </motion.div>
             </form>
+            {submitStatus && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
+                className={`mt-4 p-3 rounded-lg ${
+                  submitStatus === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                }`}
+              >
+                {submitStatus === 'success' 
+                  ? 'Thank you for your message. We\'ll get back to you soon!' 
+                  : 'There was an error sending your message. Please try again.'}
+              </motion.div>
+            )}
           </motion.div>
 
           <motion.div 

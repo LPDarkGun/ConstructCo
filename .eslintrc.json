@@ -3,4 +3,8 @@
   "rules": {
     "react/no-unescaped-entities": "off"
   }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> a6c3dee37cee08540eb5667ef555c0c67b9f89df
